@@ -7,11 +7,25 @@
     <link rel="stylesheet" href="https://unpkg.com/missing.css@1.1.1">
 </head>
 <body>
-    <header><p>Holidays</p></header>
+    <header><p><h1>Public Holidays</h1></p></header>
     <main>
-        <h1>{{ message }}</h1>
-        <div name="holidays" id="holidays">
-            <!-- Watch this space -->
+        <div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Holiday</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for day, name in list %}
+                        <tr>
+                            <td>{{ day }}</td>
+                            <td>{{ name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </main>
     <footer>
