@@ -14,39 +14,60 @@ def holiday_list():
     return render_template('index.html', countries=countries)
 
 
-__COUNTRY_ARG = 'country'
-__REGION_ARG = 'region'
-__YEAR_ARG = 'year'
+_COUNTRY_ARG = 'country'
+_REGION_ARG = 'region'
+_YEAR_ARG = 'year'
 
 
 @app.route('/holidays')
 def get_holidays():
-    region = None
-    year = datetime.today().year
-    print(request.args.get(__COUNTRY_ARG))
-    if request.args.get(__COUNTRY_ARG) is None:
-        abort(404, description="Country code not found")
-    country= request.args.get(__COUNTRY_ARG).upper()
+    country = _parse_country()
 
-    if request.args.get(__REGION_ARG) is not None:
-        region = request.args.get(__REGION_ARG).upper()
-        # TODO validate region
+    regions = sorted(holidays.list_supported_countries(True)[country])
+    region = _parse_region_for(regions)
 
-    if request.args.get(__YEAR_ARG) is not None:
-        print(f"year:{request.args.get(__YEAR_ARG)}")
+    year = _parse_year()
 
+    holiday_days = sorted(holidays.country_holidays(country, region, year).items())
+
+    holiday_model =[(calendar.day_name[day.weekday()], day, name) for day, name in holiday_days]
+    if region is None:
+        heading = f"National holidays in {country} for {year}"
+    else:
+        heading = f"Holidays in {region}, {country} for {year}"
+
+    return render_template('region_selector.html',
+                           regions=regions, selected_region=region, year=year, heading=heading, holidays=holiday_model)
+
+
+def _parse_country():
+    country = request.args.get(_COUNTRY_ARG)
+    if country is None:
+        abort(400, description="Country code not supplied")
     supported_countries = holidays.list_supported_countries(True)
     if country not in supported_countries:
-        # TODO: return render_template('error.html')
-        abort(404, description=f"Country code {country} not found")
+        abort(404, description="Country code not supported")
+    return country.upper()
 
-    regions = sorted(supported_countries[country])
 
-    if region is None:
-        holiday_days = holidays.country_holidays(country, years=2024).items()
-    else:
-        print(f"Here: country:{country}, region:{region}, year:{year}")
-        holiday_days = holidays.country_holidays(country, region, years=2024).items()
-    holiday_model =[(calendar.day_name[day.weekday()], day, name) for day, name in holiday_days]
-    return render_template('region_selector.html',
-                           regions=regions, selected_region=region, year=year, holidays=holiday_model)
+def _parse_region_for(regions):
+    region = request.args.get(_REGION_ARG)
+    if regions is None and region is not None:
+        abort(400, description="Region code supplied for country without regions")
+    if region is None or region == "None":
+        print("No region specified")
+        return None
+    if region not in regions:
+        abort(404, description="Region code not supported")
+    return region.upper()
+
+
+def _parse_year():
+    year = request.args.get(_YEAR_ARG)
+    if year is None:
+        return datetime.now().year
+    try:
+        year = int(year)
+    except ValueError:
+        abort(400, description="Year must be a number")
+    return year
