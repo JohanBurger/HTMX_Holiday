@@ -1,4 +1,5 @@
 import calendar
+from datetime import datetime
 
 import holidays
 from flask import Flask, render_template, request, abort
@@ -13,15 +14,26 @@ def holiday_list():
     return render_template('index.html', countries=countries)
 
 
+__COUNTRY_ARG = 'country'
+__REGION_ARG = 'region'
+__YEAR_ARG = 'year'
+
+
 @app.route('/holidays')
 def get_holidays():
-    for arg in request.args:
-        print(arg)
-    country = request.args.get('country').upper()
-    region = None #request.args.get('region').upper
-    year = 2024#request.args.get('year')
+    region = None
+    year = datetime.today().year
+    print(request.args.get(__COUNTRY_ARG))
+    if request.args.get(__COUNTRY_ARG) is None:
+        abort(404, description="Country code not found")
+    country= request.args.get(__COUNTRY_ARG).upper()
 
-    print(f"country:{country}, region:{region}, year:{year}")
+    if request.args.get(__REGION_ARG) is not None:
+        region = request.args.get(__REGION_ARG).upper()
+        # TODO validate region
+
+    if request.args.get(__YEAR_ARG) is not None:
+        print(f"year:{request.args.get(__YEAR_ARG)}")
 
     supported_countries = holidays.list_supported_countries(True)
     if country not in supported_countries:
@@ -29,12 +41,12 @@ def get_holidays():
         abort(404, description=f"Country code {country} not found")
 
     regions = sorted(supported_countries[country])
-    if regions is not None:
-        region = regions[0]
 
-    # if region not in regions:
-    #     abort(404, description=f"Region code {region} not found")
-
-    holiday_days = holidays.country_holidays(country, region, 2024).items()
+    if region is None:
+        holiday_days = holidays.country_holidays(country, years=2024).items()
+    else:
+        print(f"Here: country:{country}, region:{region}, year:{year}")
+        holiday_days = holidays.country_holidays(country, region, years=2024).items()
     holiday_model =[(calendar.day_name[day.weekday()], day, name) for day, name in holiday_days]
-    return render_template('region_selector.html', regions=regions, year=year, holidays=holiday_model)
+    return render_template('region_selector.html',
+                           regions=regions, selected_region=region, year=year, holidays=holiday_model)

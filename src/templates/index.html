@@ -15,7 +15,8 @@
                 <select id="country" name="country"
                         hx-get="/holidays"
                         hx-target="#country_selection_results"
-                        hx-swap="outerHTML">
+                        hx-swap="innerHTML">
+                    <option>Select a country</option>
                     {% for country_code, country_name in countries %}
                     <option value="{{ country_code }}">{{ country_name }}</option>
                     {% endfor %}

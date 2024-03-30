@@ -1,9 +1,17 @@
 {% if regions %}
     <div>
         <label for="region">Regions</label>
-        <select id="region" name="region">
+        <select id="region" name="region"
+                hx-get="/holidays"
+                hx-include="#country, #year"
+                hx-target="#country_selection_results"
+                hx-swap="innerHTML">
+            <option>Select a region</option>
             {% for region in regions %}
-            <option value="{{ region }}">{{ region }}</option>
+            <option value="{{ region }}"
+                    {% if region == selected_region%} selected="selected" {% endif %}>
+                {{ region }}
+            </option>
             {% endfor %}
         </select>
     </div>
@@ -11,7 +19,11 @@
 
 <div>
     <label for="year">Year</label>
-    <input type="number" id="year" name="year" min="2000" max="2025" value="{{ year }}" hx-get="/holidays">
+    <input type="number" id="year" name="year" min="2000" max="2025" value="{{ year }}"
+           hx-get="/holidays"
+           hx-include="#country, #region"
+           hx-target="#country_selection_results"
+           hx-swap="innerHTML">
 </div>
 
 <br>
