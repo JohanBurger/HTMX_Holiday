@@ -39,6 +39,12 @@ def get_holidays():
     return render_template('region_selector.html',
                            regions=regions, selected_region=region, year=year, heading=heading, holidays=holiday_model)
 
+@app.after_request
+def add_header(response):
+    response.cache_control.max_age = 600
+    response.cache_control.public = True
+    return response
+
 
 def _parse_country():
     country = request.args.get(_COUNTRY_ARG)
