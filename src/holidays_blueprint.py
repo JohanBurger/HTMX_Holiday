@@ -14,7 +14,7 @@ _YEAR_ARG = 'year'
 def holiday_list():
     supported_countries = sorted(holidays.registry.COUNTRIES.items())
     countries = [(country[1], country[0]) for _, country in supported_countries]
-    print(countries)
+    # print(countries)
     return render_template('index.html', countries=countries)
 
 
