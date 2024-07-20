@@ -3,6 +3,7 @@ from flask import Flask
 
 app = Flask(__name__)
 app.register_blueprint(holidays_blueprint)
+app.run
 
 @app.after_request
 def add_header(response):
