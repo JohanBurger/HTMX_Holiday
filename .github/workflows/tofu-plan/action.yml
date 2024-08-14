@@ -1,5 +1,9 @@
 name: 'OpenTofu Plan Composite Action'
 description: 'Composite action to run OpenTofu commands'
+inputs:
+  token:
+    description: "Github PAT"
+    required: true
 
 runs:
   using: 'composite'
@@ -30,12 +34,11 @@ runs:
       run: tofu plan -no-color
 
     - uses: actions/github-script@v6
-      shell: bash
       if: github.event_name == 'pull_request'
       env:
         PLAN: "tofu\n${{ steps.plan.outputs.stdout }}"
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ inputs.token }}
         script: |
           // 1. Retrieve existing bot comments for the PR
           const { data: comments } = await github.rest.issues.listComments({
