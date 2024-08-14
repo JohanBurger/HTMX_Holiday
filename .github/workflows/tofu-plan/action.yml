@@ -4,7 +4,6 @@ description: 'Composite action to run OpenTofu commands'
 runs:
   using: 'composite'
   steps:
-    - uses: actions/checkout@v4
     - uses: opentofu/setup-opentofu@v1
       with:
         tofu_version: '1.8'
