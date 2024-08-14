@@ -1,37 +1,44 @@
 name: 'OpenTofu Plan Composite Action'
 description: 'Composite action to run OpenTofu commands'
+inputs:
+  token:
+    description: "Github PAT"
+    required: true
 
 runs:
   using: 'composite'
   steps:
-    - uses: actions/checkout@v4
     - uses: opentofu/setup-opentofu@v1
       with:
         tofu_version: '1.8'
 
     - name: OpenTofu Format
       id: format
-      run: tofu fmt -check
+      shell: bash
+      run: tofu -chdir=${{ github.workspace }}/tofu fmt -check
       continue-on-error: true
 
     - name: OpenTofu Init
       id: init
-      run: tofu init
+      shell: bash
+      run: tofu -chdir=${{ github.workspace }}/tofu init
 
     - name: OpenTofu Validate
       id: validate
-      run: tofu validate -no-color
+      shell: bash
+      run: tofu -chdir=${{ github.workspace }}/tofu validate -no-color
 
     - name: OpenTofu Plan
       id: plan
-      run: tofu plan -no-color
+      shell: bash
+      run: tofu -chdir=${{ github.workspace }}/tofu plan -no-color
 
     - uses: actions/github-script@v6
       if: github.event_name == 'pull_request'
       env:
         PLAN: "tofu\n${{ steps.plan.outputs.stdout }}"
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ inputs.token }}
         script: |
           // 1. Retrieve existing bot comments for the PR
           const { data: comments } = await github.rest.issues.listComments({
