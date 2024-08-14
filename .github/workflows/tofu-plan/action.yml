@@ -7,7 +7,6 @@ inputs:
 
 runs:
   using: 'composite'
-  working-directory: ./tofu
   steps:
     - uses: opentofu/setup-opentofu@v1
       with:
