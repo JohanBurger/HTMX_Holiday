@@ -15,23 +15,23 @@ runs:
     - name: OpenTofu Format
       id: format
       shell: bash
-      run: tofu -chdir="$TOFU_CLI_PATH" fmt -check
+      run: tofu -chdir=${{ env.TOFU_CLI_PATH }} fmt -check
       continue-on-error: true
 
     - name: OpenTofu Init
       id: init
       shell: bash
-      run: tofu -chdir="$TOFU_CLI_PATH" init
+      run: tofu -chdir=${{ env.TOFU_CLI_PATH }} init
 
     - name: OpenTofu Validate
       id: validate
       shell: bash
-      run: tofu -chdir="$TOFU_CLI_PATH" validate -no-color
+      run: tofu -chdir=${{ env.TOFU_CLI_PATH }} validate -no-color
 
     - name: OpenTofu Plan
       id: plan
       shell: bash
-      run: tofu -chdir="$TOFU_CLI_PATH" plan -no-color
+      run: tofu -chdir=${{ env.TOFU_CLI_PATH }} plan -no-color
 
     - uses: actions/github-script@v6
       if: github.event_name == 'pull_request'
