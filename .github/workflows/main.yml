@@ -19,7 +19,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Run OpenTofu Composite Action
-        uses: ./.github/workflows/actions/tofu-plan
+        uses: ./.github/workflows/tofu-plan/
 
   build:
     runs-on: ubuntu-latest
