@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_resourcegroups_group" "resource_group" {
-  name        = "holidays-resource-group"
+  name = "holidays-resource-group"
   resource_query {
     query = jsonencode({
       ResourceTypeFilters = ["AWS::AllSupported"]
