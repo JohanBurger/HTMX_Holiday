@@ -1,5 +1,4 @@
 name: 'OpenTofu Plan Composite Action'
-shell: bash
 description: 'Composite action to run OpenTofu commands'
 
 runs:
@@ -11,22 +10,27 @@ runs:
 
     - name: OpenTofu Format
       id: format
+      shell: bash
       run: tofu fmt -check
       continue-on-error: true
 
     - name: OpenTofu Init
       id: init
+      shell: bash
       run: tofu init
 
     - name: OpenTofu Validate
       id: validate
+      shell: bash
       run: tofu validate -no-color
 
     - name: OpenTofu Plan
       id: plan
+      shell: bash
       run: tofu plan -no-color
 
     - uses: actions/github-script@v6
+      shell: bash
       if: github.event_name == 'pull_request'
       env:
         PLAN: "tofu\n${{ steps.plan.outputs.stdout }}"
