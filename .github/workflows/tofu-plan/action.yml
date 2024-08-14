@@ -1,4 +1,5 @@
 name: 'OpenTofu Plan Composite Action'
+shell: bash
 description: 'Composite action to run OpenTofu commands'
 
 runs:
