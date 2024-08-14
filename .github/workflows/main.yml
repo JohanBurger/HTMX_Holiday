@@ -7,6 +7,20 @@ on:
     branches: [ "main" ]
 
 jobs:
+  tofu:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./tofu
+    permissions:
+      pull-requests: write
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Run OpenTofu Composite Action
+        uses: ./.github/workflows/tofu-plan/
+
   build:
     runs-on: ubuntu-latest
     steps:
