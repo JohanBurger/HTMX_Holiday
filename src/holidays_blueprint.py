@@ -1,6 +1,6 @@
 import calendar
 from datetime import datetime
-from http import HTTPStatus
+from http import HTTPMethod, HTTPStatus
 
 import holidays
 from flask import Blueprint, abort, request, render_template
@@ -11,14 +11,14 @@ _REGION_ARG = 'region'
 _YEAR_ARG = 'year'
 
 
-@holidays_blueprint.route('/')
+@holidays_blueprint.route('/', methods=[HTTPMethod.GET])
 def holiday_list():
     supported_countries = sorted(holidays.registry.COUNTRIES.items())
     countries = [(country[1], country[0]) for _, country in supported_countries]
     return render_template('index.html', countries=countries)
 
 
-@holidays_blueprint.route('/holidays')
+@holidays_blueprint.route('/holidays', methods=[HTTPMethod.GET])
 def get_holidays():
     country = _parse_country()
 
