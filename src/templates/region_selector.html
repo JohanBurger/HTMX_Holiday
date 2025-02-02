@@ -7,10 +7,10 @@
                 hx-target="#country_selection_results"
                 hx-swap="innerHTML">
             <option value="None">National holidays</option>
-            {% for region in regions %}
-            <option value="{{ region }}"
-                    {% if region == selected_region %} selected="selected" {% endif %}>
-                {{ region }}
+            {% for region_code, region_name in regions %}
+            <option value="{{ region_code }}"
+                    {% if region_code == selected_region %} selected="selected" {% endif %}>
+                {{ region_name }}
             </option>
             {% endfor %}
         </select>
