@@ -9,4 +9,5 @@ MarkupSafe==2.1.5
 pycountry==24.6.1
 python-dateutil==2.9.0.post0
 six==1.16.0
+waitress==3.0.2
 Werkzeug==3.0.1
