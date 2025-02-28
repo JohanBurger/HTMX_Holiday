@@ -48,4 +48,5 @@ COPY src/ .
 EXPOSE 5000
 
 # Run the application.
-CMD python -m flask run --host=0.0.0.0
+CMD waitress-serve --port=5000 app:app
+
