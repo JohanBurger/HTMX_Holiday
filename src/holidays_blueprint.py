@@ -4,7 +4,7 @@ from http import HTTPMethod, HTTPStatus
 from typing import List, Optional, Tuple
 
 import holidays
-from flask import Blueprint, abort, request, render_template
+from flask import Blueprint, abort, request, render_template, make_response
 import pycountry
 
 holidays_blueprint = Blueprint('holidays_blueprint', __name__)
@@ -38,6 +38,10 @@ def get_holidays():
                            regions=regions, selected_region=region_code, year=year,
                            heading=heading, holidays=holiday_model)
 
+@holidays_blueprint.route('/liveness', methods=[HTTPMethod.GET])
+def liveness():
+    response = make_response("OK", 200)
+    return response
 
 def _validate_country_code(country_code: Optional[str]) -> str:
     if not country_code:
