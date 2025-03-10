@@ -20,7 +20,6 @@ def holiday_list():
     countries = [(country[1], _get_country_name(country[1])) for _, country in supported_countries]
     return render_template('index.html', countries=countries)
 
-
 @holidays_blueprint.route('/holidays', methods=[HTTPMethod.GET])
 def get_holidays():
     country_code = _validate_country_code(request.args.get(_COUNTRY_ARG))
@@ -40,7 +39,7 @@ def get_holidays():
 
 @holidays_blueprint.route('/liveness', methods=[HTTPMethod.GET])
 def liveness():
-    response = make_response("OK", 200)
+    response = make_response("OK", HTTPStatus.OK)
     return response
 
 def _validate_country_code(country_code: Optional[str]) -> str:
