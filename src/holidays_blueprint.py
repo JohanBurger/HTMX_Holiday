@@ -6,6 +6,7 @@ from typing import List, Optional, Tuple
 import holidays
 from flask import Blueprint, abort, request, render_template, make_response
 import pycountry
+from error_messages import ErrorMessages
 
 holidays_blueprint = Blueprint('holidays_blueprint', __name__)
 _COUNTRY_ARG = 'country'
@@ -44,10 +45,10 @@ def liveness():
 
 def _validate_country_code(country_code: Optional[str]) -> str:
     if not country_code:
-        abort(HTTPStatus.BAD_REQUEST, description="Country code not supplied")
+        abort(HTTPStatus.BAD_REQUEST, description=ErrorMessages.COUNTRY_CODE_NOT_SUPPLIED)
     country_code = country_code.upper()
     if country_code not in holidays.list_supported_countries(True):
-        abort(HTTPStatus.NOT_FOUND, description="Country code not supported")
+        abort(HTTPStatus.NOT_FOUND, description=ErrorMessages.COUNTRY_CODE_NOT_SUPPORTED)
     return country_code
 
 
@@ -58,12 +59,12 @@ def _get_country_name(country_code: str) -> str:
 
 def _validate_region_code(region_code: Optional[str], regions: List[Tuple[str, str]]) -> Optional[str]:
     if not regions and region_code:
-        abort(HTTPStatus.BAD_REQUEST, description="Region code supplied for country without regions")
+        abort(HTTPStatus.BAD_REQUEST, description=ErrorMessages.REGION_CODE_SUPPLIED_FOR_COUNTRY_WITHOUT_REGIONS)
     if not region_code or region_code == NONE_REGION:
         return None
     region_code = region_code.upper()
     if region_code not in [region[0] for region in regions]:
-        abort(HTTPStatus.NOT_FOUND, description="Region code not supported")
+        abort(HTTPStatus.NOT_FOUND, description=ErrorMessages.REGION_CODE_NOT_SUPPORTED)
     return region_code
 
 
@@ -85,4 +86,4 @@ def _parse_year(year_str: Optional[str]) -> int:
     try:
         return int(year_str)
     except ValueError:
-        abort(HTTPStatus.BAD_REQUEST, description="Year must be a number")
+        abort(HTTPStatus.BAD_REQUEST, description=ErrorMessages.YEAR_MUST_BE_A_NUMBER)
