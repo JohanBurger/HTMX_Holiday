@@ -6,6 +6,7 @@ import unittest
 
 from flask import Flask
 from bs4 import BeautifulSoup
+from error_messages import ErrorMessages
 from holidays_blueprint import holidays_blueprint
 
 
@@ -58,9 +59,9 @@ class HolidaysBlueprintTestCase(unittest.TestCase):
         country_code = 'XX'
         response = self.client.get(f'/holidays?country={country_code}')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-        self.assertIn('Country code not supported', response.data.decode())
+        self.assertIn(ErrorMessages.COUNTRY_CODE_NOT_SUPPORTED, response.data.decode())
 
     def test_country_code_not_supplied(self):
         response = self.client.get('/holidays')
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-        self.assertIn('Country code not supplied', response.data.decode())
+        self.assertIn(ErrorMessages.COUNTRY_CODE_NOT_SUPPLIED, response.data.decode())
