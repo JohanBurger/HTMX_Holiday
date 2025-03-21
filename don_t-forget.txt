@@ -1,0 +1,31 @@
+#  tofu-plan:
+#    runs-on: ubuntu-latest
+#    permissions:
+#      pull-requests: write
+#    env:
+#      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#      TOFU_CLI_PATH: ${{ github.workspace }}/tofu
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Run OpenTofu Composite Action
+#        uses: ./.github/workflows/tofu-plan/
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+
+#  lint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Set up Python for linting
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: '3.12'
+#      - name: Install dependencies
+#        run: |
+#          python -m pip install --upgrade pip
+#          pip install flake8
+#      - name: Run linting
+#        run: flake8 .
+
+# refer to  https://github.com/aws-samples/docker-ecr-actions-workflow
