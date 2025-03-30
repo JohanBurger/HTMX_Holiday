@@ -8,6 +8,7 @@ from flask import Flask
 from bs4 import BeautifulSoup
 from error_messages import ErrorMessages
 from holidays_blueprint import holidays_blueprint
+from pycountry import SubdivisionHierarchy
 
 
 class HolidaysBlueprintTestCase(unittest.TestCase):
@@ -65,3 +66,32 @@ class HolidaysBlueprintTestCase(unittest.TestCase):
         response = self.client.get('/holidays')
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertIn(ErrorMessages.COUNTRY_CODE_NOT_SUPPLIED, response.data.decode())
+
+    @patch('holidays_blueprint.holidays')
+    @patch('holidays_blueprint.pycountry.countries.get')
+    def test_region_code(self, mock_pycountry, mock_holidays):
+        # Arrange
+        country_code = 'AU'
+        nt_code = 'NT'
+        nt_name = 'Northern Territory'
+        vic_code = 'VIC'
+        vic_name = 'Victoria'
+
+        mock_holidays.list_supported_countries.return_value = {country_code: [nt_code, vic_code]}
+        mock_pycountry.subdivisions.get(f'{country_code}-{nt_code}').return_value = SubdivisionHierarchy(code=f'{country_code}-{nt_code}', country_code=country_code, name=nt_name, parent_code=None, type='Territory')
+        mock_pycountry.subdivisions.get(f'{country_code}-{vic_code}').return_value = SubdivisionHierarchy(code=f'{country_code}-{vic_code}', country_code=country_code, name=vic_name, parent_code=None, type='State')
+
+        # Act
+        response = self.client.get('/holidays?country=AU')
+
+        # Assert
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        soup = BeautifulSoup(response.data, 'html.parser')
+        region_selector = soup.find('select', {'id': 'region'})
+        options = region_selector.find_all('option')
+        self.assertEqual(len(options), 3)
+        option_values = {option['value']: option.text for option in options[1:]}
+        self.assertIn(nt_code, option_values)
+        self.assertEqual(option_values[nt_code].strip(), nt_name)
+        self.assertIn(vic_code, option_values)
+        self.assertEqual(option_values[vic_code].strip(), vic_name)
