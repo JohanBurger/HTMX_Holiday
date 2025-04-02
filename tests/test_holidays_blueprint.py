@@ -95,3 +95,24 @@ class HolidaysBlueprintTestCase(unittest.TestCase):
         self.assertEqual(option_values[nt_code].strip(), nt_name)
         self.assertIn(vic_code, option_values)
         self.assertEqual(option_values[vic_code].strip(), vic_name)
+
+    @patch('holidays_blueprint.holidays')
+    @patch('holidays_blueprint.pycountry.countries.get')
+    def test_region_code_not_found(self, mock_pycountry, mock_holidays):
+        # Arrange
+        country_code = 'AU'
+        nt_code = 'NT'
+        nt_name = 'Northern Territory'
+        vic_code = 'VIC'
+        vic_name = 'Victoria'
+
+        mock_holidays.list_supported_countries.return_value = {country_code: [nt_code, vic_code]}
+        mock_pycountry.subdivisions.get(f'{country_code}-{nt_code}').return_value = SubdivisionHierarchy(code=f'{country_code}-{nt_code}', country_code=country_code, name=nt_name, parent_code=None, type='Territory')
+        mock_pycountry.subdivisions.get(f'{country_code}-{vic_code}').return_value = SubdivisionHierarchy(code=f'{country_code}-{vic_code}', country_code=country_code, name=vic_name, parent_code=None, type='State')
+
+        # Act
+        response = self.client.get('/holidays?country=AU&region=XX')
+
+        # Assert
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertIn(ErrorMessages.REGION_CODE_NOT_SUPPORTED, response.data.decode())
